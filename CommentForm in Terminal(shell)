@@ -1,0 +1,118 @@
+-- 이한영의django입문 p.257 [chapter.17_댓글작성]
+-- board/forms.py > CommentForm을 구현하기 위해 modelForm 클래스를 사용하였고, 어떻게 사용하는지 확인하기 위해 interpreter에서 적은 코드▼
+-- 교재에서는 posts라는 앱명을 가지지만 프로젝트에서는 board로 사용함 (posts = board)
+
+>python manage.py shell         # vs code > python cmd (interpreter)
+>>> from board.forms inmport CommentForm
+
+>>> data = {'content': 'SampleContent'}
+>>> form = CommentForm(data=data)
+
+>>> form.is_valid()
+True
+>>> form.save()
+Traceback (most recent call last):
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: NOT NULL constraint failed: board_comment.post_id          # board_comment 테이블의 post_id필드는 NULL을 허용하지 않는다는 메세지이다. board_comment는 Comment모델의 실제 DB테이블명, post_id는 Comment모델의 post=models.ForeignKey(Post)필드에 해당. Comment객체를 생성할때는 어떤post와 연결할 건지 지정필수. CommentForm 에 전달한 데이터에는 Post객체가 없으므로 오류 발생
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\forms\models.py", line 542, in save
+    self.instance.save()
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\models\base.py", line 814, in save
+    self.save_base(
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\models\base.py", line 877, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\models\base.py", line 1020, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\models\base.py", line 1061, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\models\query.py", line 1805, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\models\sql\compiler.py", line 1822, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\backends\utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: NOT NULL constraint failed: board_comment.post_id
+>>> data = {'content': 'SampleContent'} 
+>>> form = CommentForm(data=data)
+>>> form.is_valid()
+True
+>>> comment = form.save(commit=False)
+>>> print(comment.id)
+None
+>>> from account.models import User
+>>> from board.models import Post
+>>> user = User.objects.all()[0]
+>>> post = Post.objects.all()[0]
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\models\query.py", line 450, in __getitem__
+    return qs._result_cache[0]
+           ~~~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
+>>> from account.models import User
+>>> from board.models import Post
+>>> account = User.objects.all()[0]
+>>> board = Post.objects.all()[0]
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+  File "C:\Users\HHS\anaconda3\envs\django\Lib\site-packages\django\db\models\query.py", line 450, in __getitem__
+    return qs._result_cache[0]
+           ~~~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
+>>> from account.models import User
+>>> from board.models import Post
+>>> user = User.objects.create_user(username = 'test1', password = 'test1') 
+>>> post = Post.objects.create(content='Sample Post 1', user=user)
+>>> print(f"User ID : {user.id}, Post ID : {post.id} ") 
+User ID : 4, Post ID : 1
+>>> user.User.objects.all()[0]
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+AttributeError: 'User' object has no attribute 'User'
+>>> user = User.objects.all()[0]
+>>> post = Post.objects.all()[0]
+>>> print(f"User: {user.username}, Post: {post.content}")
+User: admin, Post: Sample Post 1
+>>> print(user)
+admin
+>>> print(post)
+Post object (1)
+>>> comment.user = user
+>>> comment.post = post
+>>> comment.save()    
+>>> comment.id
+1
