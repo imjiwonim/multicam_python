@@ -1,4 +1,5 @@
 from django.db import models
+from account.models import User
 
 class Post(models.Model):
     user = models.ForeignKey(
