@@ -7,9 +7,12 @@
 </div>
 
 <div class="post-comment-create">
-    <form method="POST">
+    <form method="POST" action="{% url 'comment_add' %}">
+    <!-- <form method="POST" action="/board/comment_add/"> -->
         {% csrf_token %}
-        {{ form.as_p }}  <!-- 'comment_form'이 아닌 form 으로 변경 -->
+        <!-- {{ form.as_p}} -->
+        <input type="hidden" name="post" value="{{ post.id }}">
+        {{ form.content }}  <!-- 'comment_form'이 아닌 form 으로 변경 -->
         <button type="submit">게시</button>
     </form>
 </div>

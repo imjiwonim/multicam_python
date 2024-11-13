@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOME</title>
-</head>
-<body>
-    <h1>HOBBYST</h1>
-    <div>{{ user.username }} (ID: {{ user.id}})</div>
-    <a href="/account/logout/">로그아웃</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+    <nav>
+        <h1>HOBBYST</h1>
+    </nav>
+    <div id="home" class="post-container">
+        {%  for post in board %}
+            <article class="post">
+                <header class="post-header">
+                    {% if post.user.profile_image %}
+                        <img src="{{ post.user.profile_image.url }}">
+                    {% endif %}
+                    <span>{{  post.user.username }}</span>
+                </header>
+            </article>
+        {% endfor %}
+    </div>
+{% endblock %}
