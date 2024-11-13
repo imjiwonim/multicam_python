@@ -1,9 +1,10 @@
 from django.urls import path
-from board.views import home
-# , post_write, comment_add
+from board.views import home, comment_add, comment_delete, post_write
+# ,post_write
 
 urlpatterns = [
     path('', home, name='home'),
-    # path('post_write/', post_write),
-    # path('comment_add/', comment_add, name='comment_add'),
+    path('comment_add/', comment_add),
+    path('comment_delete/<int:comment_id>/', comment_delete),
+    path('post_write/', post_write),
 ]
