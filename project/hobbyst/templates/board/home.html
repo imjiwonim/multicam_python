@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-    <nav>
+    <!-- <nav>
         <h1>
             <a href="{% url 'board:home' %}">HOBBYST</a>
         </h1>
         <a href="/board/post_write/">Add Post</a>
         <a href="/account/logout/">logout</a>
-    </nav>
+    </nav> -->
+    {% include 'nav.html' %}
     <div id="home" class="post-container">
         {%  for post in board %}
-            <article class="post">
+            <article id="post-{{ post.id }}" class="post">
                 <header class="post-header">
                     {% if post.user.profile_image %}
                         <img src="{{ post.user.profile_image.url }}">
@@ -17,7 +18,7 @@
                     <span>{{  post.user.username }}</span>
                 </header>
 
-                <!-- ★이미지 슬라이드 영역 시작 인데 슬라이드 적용안됨-->
+                <!-- '이미지 슬라이드 영역 시작' 인데 슬라이드 적용안됨-->
                  <div class="post-images splide">
                     <div class="splide__track">
                         <ul class="splide__list">
@@ -49,9 +50,9 @@
 
                             <!-- 댓글 삭제 form 추가-->
                              {% if user == comment.user %}
-                                <form method="POST" action="/board/comment_delete/{{ comment_id }}/">
+                                <form method="POST" action="/board/comment_delete/{{ comment.id }}/">
                                     {% csrf_token %}
-                                    <button type="submin">삭제</button>
+                                    <button type="submit">삭제</button>
                                 </form>
                             {% endif %}
                         </li>
@@ -62,9 +63,8 @@
                  <div class="post-comment-create">
                     <form method="POST" action="/board/comment_add/">
                         {% csrf_token %}
-                        <input type="hidden" name="post" value="{{ post.id }}"
+                        <input type="hidden" name="post" value="{{ post.id }}">
                         {{ comment_form.content }}
-                        <input type="text" placeholder="댓글 달기...">
                         <button type="submit">게시</button>
                     </form>
                  </div>

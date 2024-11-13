@@ -1,0 +1,61 @@
+<article id="post-{{ post.id }}" class="post">
+    <header class="post-header">
+        {% if post.user.profile_image %}
+            <img src="{{ post.user.profile_image.url }}">
+        {% endif %}
+        <span>{{  post.user.username }}</span>
+    </header>
+
+    <!-- ★이미지 슬라이드 영역 시작 인데 슬라이드 적용안됨-->
+        <div class="post-images splide">
+        <div class="splide__track">
+            <ul class="splide__list">
+                {% for image in post.postimage_set.all %}
+                    {% if image.photo %}
+                    <li class="splide__slide">
+                        <img src="{{ image.photo.url }}">
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        </div>
+        <!--이미지 슬라이드 영역 종료-->
+        <div class="post-content">
+        {{ post.content|linebreaksbr}}
+        </div>
+        <div class="post-buttons">
+        <button type="submit">Likes(0)</button>
+        <span>Comments({{ post.comment_set.count}})</span>
+        </div>
+        <div class="post-comments">
+        <ul>
+        <!--각 post에 연결된 comment들을 순회-->
+        {% for comment in post.comment_set.all %}
+            <li>
+                <span>{{ comment.user.username }}</span>
+                <span>{{ comment.content }}</span>
+
+                <!-- 댓글 삭제 form 추가-->
+                    {% if user == comment.user %}
+                    <form method="POST" action="/board/comment_delete/{{ comment.id }}/">
+                        {% csrf_token %}
+                        <button type="submit">삭제</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+        </div>
+        <small>{{ post.created }}</small>
+        <div class="post-comment-create">
+        <form method="POST" 
+            action="{% url 'board:comment_add' %}?next={{action_redirect_url }}">
+            {% csrf_token %}
+            <input type="hidden" name="post" value="{{ post.id }}">
+            {{ comment_form.content }}
+            <!-- <input type="text" placeholder="댓글 달기..."> -->
+            <button type="submit">게시</button>
+        </form>
+        </div>
+</article>
