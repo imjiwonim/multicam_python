@@ -1,18 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<nav>
+    <h1>
+        <a href="{% url 'board:home' %}">HOBBYST</a>
+    </h1>
+    <a href="/account/logout/">logout</a>
+</nav>
 <div id="post-write">
     <h1>Post Write</h1>
-</div>
-
-<div class="post-comment-create">
-    <form method="POST" action="{% url 'comment_add' %}">
-    <!-- <form method="POST" action="/board/comment_add/"> -->
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <!-- {{ form.as_p}} -->
-        <input type="hidden" name="post" value="{{ post.id }}">
-        {{ form.content }}  <!-- 'comment_form'이 아닌 form 으로 변경 -->
+        <div>
+            <label for="id_images">이미지</label>
+            <input id="id_images" name="images" type="file" multiple>
+        </div>
+        {{ form.as_p }}
         <button type="submit">게시</button>
     </form>
 </div>

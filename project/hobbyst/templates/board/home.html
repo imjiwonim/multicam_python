@@ -2,9 +2,9 @@
 {% block content %}
     <nav>
         <h1>
-            <a href="/board/">HOBBYST</a>
+            <a href="{% url 'board:home' %}">HOBBYST</a>
         </h1>
-        <!-- ★logout 버튼이 페이지 제목 아래 있음-->
+        <a href="/board/post_write/">Add Post</a>
         <a href="/account/logout/">logout</a>
     </nav>
     <div id="home" class="post-container">
@@ -35,9 +35,9 @@
                  <div class="post-content">
                     {{ post.content|linebreaksbr}}
                  </div>
-                 <div class="post=buttons">
-                    <button>Likes(0)</button>
-                    <span>Comments(0)</span>
+                 <div class="post-buttons">
+                    <button type="submit">Likes(0)</button>
+                    <span>Comments({{ post.comment_set.count}})</span>
                  </div>
                  <div class="post-comments">
                     <ul>
@@ -46,14 +46,27 @@
                         <li>
                             <span>{{ comment.user.username }}</span>
                             <span>{{ comment.content }}</span>
+
+                            <!-- 댓글 삭제 form 추가-->
+                             {% if user == comment.user %}
+                                <form method="POST" action="/board/comment_delete/{{ comment_id }}/">
+                                    {% csrf_token %}
+                                    <button type="submin">삭제</button>
+                                </form>
+                            {% endif %}
                         </li>
                     {% endfor %}
                     </ul>
                  </div>
                  <small>{{ post.created }}</small>
                  <div class="post-comment-create">
-                    <input type="text" placeholder="댓글 달기...">
-                    <button type="submit">게시</button>
+                    <form method="POST" action="/board/comment_add/">
+                        {% csrf_token %}
+                        <input type="hidden" name="post" value="{{ post.id }}"
+                        {{ comment_form.content }}
+                        <input type="text" placeholder="댓글 달기...">
+                        <button type="submit">게시</button>
+                    </form>
                  </div>
             </article>
         {% endfor %}
